@@ -126,29 +126,33 @@ app.post("/bfhl", async (req, res) => {
 
             try {
                 const response = await axios.post(
-                    "https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent",
+                    "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent",
                     {
                         contents: [
-                            { parts: [{ text: question }] }
+                            {
+                                parts: [{ text: question }]
+                            }
                         ]
                     },
                     {
-                        params: { key: process.env.GEMINI_API_KEY },
-                        timeout: 5000
+                        headers: {
+                            "x-goog-api-key": process.env.GEMINI_API_KEY,
+                            "Content-Type": "application/json"
+                        },
+                        timeout: 10000
                     }
                 );
 
                 const text =
                     response.data.candidates[0].content.parts[0].text;
 
-                result = text.split(" ")[0];
+                result = text;
 
             } catch (err) {
+                console.log("Gemini failed, fallback used");
                 result = "Mumbai";
             }
         }
-
-
 
         else {
             throw "Invalid key";
